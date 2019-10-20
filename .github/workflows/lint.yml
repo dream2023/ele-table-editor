@@ -1,0 +1,14 @@
+name: Lint # 名字
+
+on: push # 在 push 时触发
+
+jobs: # 任务列表
+  lint:
+    runs-on: ubuntu-latest # 运行环境
+    
+    steps: # 步骤
+    - uses: actions/checkout@v1 # 拉取代码
+    - name: install # 名称， 可省略
+      run: yarn # 执行命令， yarn
+    - name: lint # 名称， 可省略
+      run: yarn lint # 执行命令 yarn lint
