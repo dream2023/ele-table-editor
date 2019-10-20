@@ -1,15 +1,29 @@
 {
-  "name": "ele-form-table",
+  "name": "ele-table-editor",
+  "description": "基于element-ui的表格编辑组件",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dream2023/ele-table-editor"
+  },
+  "main": "src/index.js",
+  "homepage": "https://github.com/dream2023/ele-table-editor/",
+  "keywords": [
+    "ele-table-editor",
+    "element table-editor",
+    "table-editor",
+    "vue-table-editor",
+    "vue",
+    "vue 表格编辑"
+  ],
   "dependencies": {
-    "core-js": "^3.1.2",
-    "vue": "^2.6.10"
+    "async-validator": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.0.0",
@@ -17,9 +31,12 @@
     "@vue/cli-service": "^4.0.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "core-js": "^3.1.2",
+    "element-ui": "^2.12.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "lint-staged": "^8.1.5",
+    "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   },
   "gitHooks": {
