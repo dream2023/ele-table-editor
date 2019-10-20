@@ -1,6 +1,6 @@
 name: Lint # 名字
 
-on: push # 在 push 时触发
+on: [push, pull_request] # 在 push 时触发
 
 jobs: # 任务列表
   lint:
