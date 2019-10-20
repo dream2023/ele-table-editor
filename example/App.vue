@@ -117,7 +117,9 @@ export default {
                 placeholder: '学员姓名'
               }
               // 此外还有
-              // style: {} -> 组件的样式, class: {} -> 组件的class, on: {} -> 组件的事件
+              // style: {}, // 组件的样式
+              // class: {}, // 组件的class
+              // on: {} // 组件的事件
             }
           },
           {
