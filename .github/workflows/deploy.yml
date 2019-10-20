@@ -3,7 +3,9 @@ name: Deploy
 on: 
   push: # 在 push 时 
     branches: master # 且 为 master 分支
-    paths: src/* # 且 仅当 src 目录下文件变动
+    paths: 
+      - src/**
+      - example/**
 
 jobs:
   deploy:
