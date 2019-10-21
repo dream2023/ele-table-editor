@@ -28,19 +28,18 @@
                   contentItem
                 }}</span>
                 <!-- content 为其它类型, 则按照动态组件渲染 -->
-                <!-- 利用 Popover 组件作为 [错误] 弹出框-->
-                <component
+                <!-- 利用 Tooltip 组件作为 [错误] 弹出框-->
+                <el-tooltip
+                  effect="dark"
                   v-else
                   :key="i"
                   class="el-form-item"
-                  title="错误提示"
-                  :content="
-                    isError(scope.$index, contentItem.valueKey, item.attrs.prop)
-                  "
-                  :is="
-                    isError(scope.$index, contentItem.valueKey, item.attrs.prop)
-                      ? 'el-popover'
-                      : 'div'
+                  :disabled="
+                    !isError(
+                      scope.$index,
+                      contentItem.valueKey,
+                      item.attrs.prop
+                    )
                   "
                   :class="{
                     'is-error': isError(
@@ -49,6 +48,10 @@
                       item.attrs.prop
                     )
                   }"
+                  :content="
+                    isError(scope.$index, contentItem.valueKey, item.attrs.prop)
+                  "
+                  placement="top"
                 >
                   <!-- 组件 -->
                   <component
@@ -56,7 +59,6 @@
                     :style="contentItem.style"
                     :class="contentItem.class"
                     v-bind="getAttrs(contentItem.attrs)"
-                    slot="reference"
                     @input="
                       handleChange(
                         contentItem.valueKey || item.attrs.prop,
@@ -85,7 +87,7 @@
                       <extend-slot :key="key" :render="render" />
                     </template>
                   </component>
-                </component>
+                </el-tooltip>
               </template>
             </template>
             <template v-else>
