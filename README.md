@@ -126,7 +126,9 @@ export default {
               // 此外还有
               // style: {}, //组件的样式,
               // class: {}, // 组件的class,
-              // on: { change (value) {  } } // 组件的事件
+              // on: {} // 组件的事件
+              // slots: {} // 插槽
+              // scopedSlots: {} // 作用域插槽
             }
           },
           {
@@ -188,6 +190,8 @@ export default {
 ```
 
 ## Props 参数
+
+### 参数概述
 
 ```js
 props: {
@@ -251,6 +255,74 @@ props: {
     type: String,
     default: '新增'
   }
+}
+```
+
+### columns 参数详解
+
+```js
+columns: {
+  // attrs 为 el-table-column 的属性
+  // 具体参考: https://element.eleme.cn/#/zh-CN/component/table#table-column-attributes
+  attrs: {
+    prop: 'name', // el-table-column 的 prop 属性
+    label: '姓名', // el-table-column 的 label 属性
+    width: 200, // el-table-column 的 width 属性
+    // ...
+  },
+  // column的内容, 可省略, 省略时为显示字符串
+  // column 的类型可以为对象或者对象数组, 例如
+  content: {
+    // 渲染的组件, 可以为全局注册的组件名称或者直接组件的引用
+    type: 'el-select',
+    // 组件属性
+    attrs: {
+      size: 'medium',
+      // ...
+    },
+    // 组件样式
+    style: {
+      width: '200px',
+      // ...
+    },
+    // 组件 class
+    class: 'my-custom-select',
+    // 组件事件
+    on: {
+      change(value) {
+        console.log(value)
+      },
+      // ...
+    },
+    // 组件插槽
+    slots: {
+      default (h) {
+        return [
+          h('el-option', { attrs: { label: '男', value: 1 } }),
+          h('el-option', { attrs: { label: '女', value: 2 } })
+        ]
+      }
+    },
+    // 作用域插槽
+    scopedSlots: {
+      test (h, data) {
+        // data 为传递过来的参数
+        return h('div', 'test')
+      }
+    }
+  },
+  // ⚠️ 当content为数组时, 必须要指定双向绑定的 valueKey
+  // 例如
+  content: [
+    {
+      type: ElInput, // 这里是直接使用组件的引用 import {ElInput} from 'element-ui'
+      valueKey: 'name' // 和 tableData 的 name 绑定
+    }
+    {
+      type: 'el-input',
+      valueKey: 'age' // 和 tableData 的 age 绑定
+    }
+  ]
 }
 ```
 
