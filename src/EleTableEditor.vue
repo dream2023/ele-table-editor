@@ -247,7 +247,7 @@ export default {
       this.$emit('input', tableData)
     },
     handleAdd () {
-      this.value.push(this.newColumnValue)
+      this.value.push(Object.assign({}, this.newColumnValue))
       this.$emit('input', this.value)
     },
     // 值变化
