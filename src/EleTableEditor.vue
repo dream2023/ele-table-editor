@@ -1,128 +1,149 @@
 <template>
-  <!-- element-ui table 组件 -->
-  <el-table
-    class="ele-table-editor"
-    :data="value"
-    v-bind="tableAttrs"
-    v-on="tableOn"
-  >
-    <!-- element-ui table-column组件 -->
-    <template v-for="(item, index) of computedColumns">
-      <!-- type 非 index / selection -->
-      <el-table-column v-if="item.isShowSlot" :key="index" v-bind="item.attrs">
-        <!-- table-column 作用域插槽 -->
-        <template slot-scope="scope">
-          <!-- 对外暴露的作用域插槽 -->
-          <slot
-            :name="item.attrs.prop"
-            :data="value[scope.$index]"
-            :row="scope.row"
-            :index="scope.$index"
-            class="ele-table-editor-content"
-          >
-            <!-- 判断是否定义了 content 属性 -->
-            <template v-if="item.content">
-              <template v-for="(contentItem, i) of item.content">
-                <!-- conent 为字符串类型, 直接渲染 span 标签 -->
-                <span :key="i" v-if="typeof contentItem === 'string'">{{
-                  contentItem
-                }}</span>
-                <!-- content 为其它类型, 则按照动态组件渲染 -->
-                <!-- 利用 Tooltip 组件作为 [错误] 弹出框-->
-                <el-tooltip
-                  effect="dark"
-                  v-else
-                  :key="i"
-                  class="el-form-item"
-                  :disabled="
-                    !isError(
-                      scope.$index,
-                      contentItem.valueKey,
-                      item.attrs.prop
-                    )
-                  "
-                  :class="{
-                    'is-error': isError(
-                      scope.$index,
-                      contentItem.valueKey,
-                      item.attrs.prop
-                    )
-                  }"
-                  :content="
-                    isError(scope.$index, contentItem.valueKey, item.attrs.prop)
-                  "
-                  placement="top"
-                >
-                  <!-- 组件 -->
-                  <component
-                    :is="contentItem.type"
-                    :style="contentItem.style"
-                    :class="contentItem.class"
-                    v-bind="getAttrs(contentItem.attrs)"
-                    @input="
-                      handleChange(
-                        contentItem.valueKey || item.attrs.prop,
+  <div>
+    <!-- 新增按钮 -->
+    <slot>
+      <div v-if="isShowAdd" class="ele-table-editor-btn">
+        <el-button type="primary" @click="handleAdd">{{
+          addBtnText
+        }}</el-button>
+      </div>
+    </slot>
+
+    <!-- element-ui table 组件 -->
+    <el-table
+      class="ele-table-editor"
+      :data="value"
+      v-bind="tableAttrs"
+      v-on="tableOn"
+    >
+      <!-- element-ui table-column组件 -->
+      <template v-for="(item, index) of computedColumns">
+        <!-- type 非 index / selection -->
+        <el-table-column
+          v-if="item.isShowSlot"
+          :key="index"
+          v-bind="item.attrs"
+        >
+          <!-- table-column 作用域插槽 -->
+          <template slot-scope="scope">
+            <!-- 对外暴露的作用域插槽 -->
+            <slot
+              :name="item.attrs.prop"
+              :data="value[scope.$index]"
+              :row="scope.row"
+              :index="scope.$index"
+              class="ele-table-editor-content"
+            >
+              <!-- 判断是否定义了 content 属性 -->
+              <template v-if="item.content">
+                <template v-for="(contentItem, i) of item.content">
+                  <!-- conent 为字符串类型, 直接渲染 span 标签 -->
+                  <span :key="i" v-if="typeof contentItem === 'string'">{{
+                    contentItem
+                  }}</span>
+                  <!-- content 为其它类型, 则按照动态组件渲染 -->
+                  <!-- 利用 Tooltip 组件作为 [错误] 弹出框-->
+                  <el-tooltip
+                    effect="dark"
+                    v-else
+                    :key="i"
+                    class="el-form-item"
+                    :disabled="
+                      !isError(
                         scope.$index,
-                        $event
+                        contentItem.valueKey,
+                        item.attrs.prop
                       )
                     "
-                    v-model="scope.row[contentItem.valueKey || item.attrs.prop]"
-                    v-on="contentItem.on"
+                    :class="{
+                      'is-error': isError(
+                        scope.$index,
+                        contentItem.valueKey,
+                        item.attrs.prop
+                      )
+                    }"
+                    :content="
+                      isError(
+                        scope.$index,
+                        contentItem.valueKey,
+                        item.attrs.prop
+                      )
+                    "
+                    placement="top"
                   >
-                    <!-- 组件的插槽 -->
-
-                    <!-- 作用域插槽 -->
-                    <template
-                      v-for="(render, key) of contentItem.scopedSlots"
-                      v-slot:[key]="data"
+                    <!-- 组件 -->
+                    <component
+                      :is="contentItem.type"
+                      :style="contentItem.style"
+                      :class="contentItem.class"
+                      v-bind="getAttrs(contentItem.attrs)"
+                      @input="
+                        handleChange(
+                          contentItem.valueKey || item.attrs.prop,
+                          scope.$index,
+                          $event
+                        )
+                      "
+                      v-model="
+                        scope.row[contentItem.valueKey || item.attrs.prop]
+                      "
+                      v-on="contentItem.on"
                     >
-                      <extend-slot :data="data" :key="key" :render="render" />
-                    </template>
+                      <!-- 组件的插槽 -->
 
-                    <!-- 非作用域插槽 -->
-                    <template
-                      v-for="(render, key) of contentItem.slots"
-                      v-slot:[key]
-                    >
-                      <extend-slot :key="key" :render="render" />
-                    </template>
-                  </component>
-                </el-tooltip>
+                      <!-- 作用域插槽 -->
+                      <template
+                        v-for="(render, key) of contentItem.scopedSlots"
+                        v-slot:[key]="data"
+                      >
+                        <extend-slot :data="data" :key="key" :render="render" />
+                      </template>
+
+                      <!-- 非作用域插槽 -->
+                      <template
+                        v-for="(render, key) of contentItem.slots"
+                        v-slot:[key]
+                      >
+                        <extend-slot :key="key" :render="render" />
+                      </template>
+                    </component>
+                  </el-tooltip>
+                </template>
               </template>
-            </template>
-            <template v-else>
-              <!-- 没有定义content则这显示对应的文本值 -->
-              <template v-if="item.attrs && item.attrs.prop">{{
-                scope.row[item.attrs.prop]
-              }}</template>
-            </template>
-          </slot>
+              <template v-else>
+                <!-- 没有定义content则这显示对应的文本值 -->
+                <template v-if="item.attrs && item.attrs.prop">{{
+                  scope.row[item.attrs.prop]
+                }}</template>
+              </template>
+            </slot>
+          </template>
+        </el-table-column>
+        <!-- type 为 index / selection -->
+        <el-table-column v-else :key="index" v-bind="item.attrs">
+        </el-table-column>
+      </template>
+      <el-table-column
+        v-if="isShowActionColumn"
+        header-align="center"
+        align="center"
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-button
+            v-for="(btn, index) of extraBtns"
+            :key="index"
+            v-bind="btn.attrs"
+            @click="btn.click(scope)"
+            >{{ btn.text }}</el-button
+          >
+          <el-button v-bind="deleteBtnAttr" @click="handleDelete(scope.$index)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
-      <!-- type 为 index / selection -->
-      <el-table-column v-else :key="index" v-bind="item.attrs">
-      </el-table-column>
-    </template>
-    <el-table-column
-      v-if="isShowActionColumn"
-      header-align="center"
-      align="center"
-      label="操作"
-    >
-      <template slot-scope="scope">
-        <el-button
-          v-for="(btn, index) of extraBtns"
-          :key="index"
-          v-bind="btn.attrs"
-          @click="btn.click(scope)"
-          >{{ btn.text }}</el-button
-        >
-        <el-button v-bind="deleteBtnAttr" @click="handleDelete(scope.$index)"
-          >删除</el-button
-        >
-      </template>
-    </el-table-column>
-  </el-table>
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -178,6 +199,21 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    // 新增列的值
+    newColumnValue: {
+      type: Object,
+      default: () => ({})
+    },
+    // 是否显示新增按钮
+    isShowAdd: {
+      type: Boolean,
+      default: true
+    },
+    // 新增按钮文本
+    addBtnText: {
+      type: String,
+      default: '新增'
     }
   },
   computed: {
@@ -210,6 +246,10 @@ export default {
       tableData.splice(index, 1)
       this.$emit('input', tableData)
     },
+    handleAdd () {
+      this.value.push(this.newColumnValue)
+      this.$emit('input', this.value)
+    },
     // 值变化
     handleChange (prop, index, value) {
       this.validateOneValue(prop, index, value)
@@ -237,5 +277,9 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+.ele-table-editor-btn {
+  margin-bottom: 20px;
 }
 </style>

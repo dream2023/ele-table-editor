@@ -1,7 +1,6 @@
 <template>
   <el-card header="table-editor 示例" style="margin: 50px 20px;">
     <div class="actions">
-      <el-button type="primary" @click="handleAdd">点我新增</el-button>
       <el-button type="danger" @click="handleCheck">校检数据</el-button>
       <el-button>
         <el-link
@@ -27,6 +26,7 @@
       :rules="rules"
       :columns="columns"
       v-model="tableData"
+      :newColumnValue="newColumnValue"
     >
       <!-- 支持插槽 -->
       <template v-slot:sex="{ data }">
@@ -66,9 +66,14 @@ export default {
           unPay: 100
         }
       ],
+      newColumnValue: {
+        grade: '三年级二班'
+      },
       // 校检规则
       rules: {
-        name: { required: true, message: '姓名必填' },
+        name: [
+          { required: true, message: '姓名必填' }
+        ],
         tuition: { required: true, message: '已缴纳金额必填' }
       },
       // 其它按钮

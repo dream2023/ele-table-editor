@@ -30,7 +30,6 @@ export default {
 <template>
   <div style="margin: 50 auto;">
     <div style="margin-bottom: 20px;">
-      <el-button type="primary" @click="handleAdd">点我新增</el-button>
       <el-button type="danger" @click="handleCheck">校检数据</el-button>
     </div>
 
@@ -39,6 +38,7 @@ export default {
       :extraBtns="extraBtns"
       :rules="rules"
       :columns="columns"
+      :newColumnValue="newColumnValue"
       v-model="tableData"
     >
       <!-- 支持插槽 -->
@@ -72,6 +72,8 @@ export default {
             unPay: 100
           }
         ],
+        // 新增列的默认值
+        newColumnValue: { grade: '三年级二班' },
         // 校检规则
         rules: {
           name: { required: true, message: '姓名必填' },
@@ -174,10 +176,6 @@ export default {
       }
     },
     methods: {
-      // 新增数据
-      handleAdd() {
-        this.tableData.push({ grade: '三年级二班' })
-      },
       // 校检数据
       handleCheck() {
         this.$refs['table'].validate(res => {
@@ -207,7 +205,7 @@ props: {
     type: Array,
     default: () => []
   },
-  // 是否显示删除按钮
+  // 是否显示删除
   isShowDelete: {
     type: Boolean,
     default: true
@@ -237,9 +235,29 @@ props: {
   disabled: {
     type: Boolean,
     default: false
+  },
+  // 新增列的值
+  newColumnValue: {
+    type: Object,
+    default: () => ({})
+  },
+  // 是否显示新增按钮
+  isShowAdd: {
+    type: Boolean,
+    default: true
+  },
+  // 新增按钮文本
+  addBtnText: {
+    type: String,
+    default: '新增'
   }
 }
 ```
+
+## 插槽
+
+- 默认插槽 新增按钮的插槽
+- column 中 prop 属性对应的插槽, 例如示例中 `v-slot:sex` 或者 `v-slot:age` 等
 
 ## 相关链接
 
