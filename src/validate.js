@@ -3,11 +3,12 @@ import Schema from 'async-validator'
 export default {
   data () {
     return {
+      // 错误列表
       errorList: {}
     }
   },
   methods: {
-    // 数据校检
+    // 数据校检 (对外暴露)
     validate () {
       // 检测单个值, 用于界面提示
       this.validateAllValue()
@@ -15,27 +16,16 @@ export default {
       // 没有数据 或者 没有校检, 则直接返回 resolve
       if (!this.rules || !this.value.length) return Promise.resolve()
 
-      // 数组的校检, 利用 Promise.all
-      const validators = this.value.map((item) => {
-        return new Promise((resolve, reject) => {
-          var validator = new Schema(this.rules)
-          validator.validate(item, (errors) => {
-            if (errors) {
-              reject(errors)
-            } else {
-              resolve()
-            }
-          })
-        })
-      })
-      return new Promise((resolve, reject) => {
-        Promise.all(validators).then((res) => {
-          resolve()
-        }).catch((error) => {
-          reject(error)
-        })
-      })
+      // async-validator 数组的校检 https://github.com/yiminghe/async-validator#deep-rules
+      var descriptor = {
+        data: {
+          type: 'array',
+          fields: this.rules
+        }
+      }
+      return new Schema(descriptor).validate({ data: this.value })
     },
+    // 检测每一个行的每个值的数据
     validateAllValue () {
       const ruleKeys = Object.keys(this.rules || {})
       this.value.forEach((item, index) => {
@@ -62,11 +52,12 @@ export default {
     // 数据校检
     checkValue (prop, value) {
       return new Promise((resolve, reject) => {
+        // 如果校检规则存在, 且当前字段的校检规则存在
         if (this.rules && this.rules[prop]) {
           const validator = new Schema({ [prop]: this.rules[prop] })
           validator.validate({ [prop]: value }, (errors, fields) => {
             if (errors) {
-              reject(errors)
+              reject(errors, fields)
             } else {
               resolve()
             }
@@ -77,12 +68,13 @@ export default {
       })
     },
     // 检查通过
+    // 重置 errorList 的值
     handleCheckSuccess (prop, index) {
       if (this.errorList[index] && this.errorList[index][prop]) {
         this.errorList[index][prop] = null
       }
     },
-    // 处理错误
+    // 处理错误, 将错误拼接字符串, 并保存在 errorList 中
     handleCheckError (prop, index, errors) {
       if (!this.errorList[index]) {
         this.$set(this.errorList, index, {})
@@ -90,6 +82,7 @@ export default {
       this.$set(this.errorList[index], prop, errors.map((item) => item.message).join(','))
     },
     // 判断是否出错
+    // 用于加 class 样式和 tooltip 的 disabled 属性
     isError (index, valueKey, prop) {
       return this.errorList &&
         this.errorList[index] &&

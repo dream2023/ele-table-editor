@@ -6,6 +6,17 @@
 
 ![image](https://raw.githubusercontent.com/dream2023/images/master/table-editor.x92q1qonef.gif)
 
+## 特性
+
+> 通过对 el-table-column 增加一个属性 **content**, 实现了如下特性:
+
+- 数据驱动
+- 行内编辑
+- 输入校检
+- 错误展示
+- 数据格式化
+- 一键禁用
+
 ## 安装
 
 ```bash
@@ -94,71 +105,51 @@ export default {
             }
           }
         ],
+
         // 表格列
         columns: [
+          // el-table-column 的属性 + content 属性
           {
-            // attrs 为 el-table-column 的属性
-            attrs: {
-              type: 'index'
-            }
+            type: 'index'
           },
           {
-            // 当没有 conent 属性时, 按照正常文本显示
-            attrs: {
-              prop: 'grade',
-              label: '年级'
-            }
+            prop: 'grade',
+            label: '年级'
           },
           {
-            attrs: {
-              prop: 'name',
-              label: '姓名'
-            },
+            prop: 'name',
+            label: '姓名',
             // 当有 content 属性时, 可以指定相应的组件
             content: {
               // type 可以为全局注册的组件名或者组件引用
-              // 这里是全局注册的组件名
               type: 'el-input',
               // attrs 是组件的属性
               attrs: {
                 placeholder: '学员姓名'
               }
               // 此外还有
-              // style: {}, //组件的样式,
-              // class: {}, // 组件的class,
-              // on: {} // 组件的事件
-              // slots: {} // 插槽
+              // style: {}, // 组件的样式
+              // class: {}, // 组件的class
+              // on: {}, // 组件的事件
+              // slots:{}, // 插槽
               // scopedSlots: {} // 作用域插槽
             }
           },
           {
-            attrs: {
-              prop: 'age',
-              label: '年龄'
-            },
-            content: {
-              // 这里是 组件的引用
-              // 这样就可以实现任意扩展了
-              type: InputNumber
-            }
+            prop: 'sex',
+            label: '性别'
           },
           {
-            attrs: {
-              prop: 'sex',
-              label: '性别'
-            }
-          },
-          {
-            attrs: {
-              label: '缴费',
-              width: 400
-            },
+            label: '缴费',
+            width: 400,
             // content 可以为数组
             content: [
-              '已缴纳: ', // 数组可以是 组件 和 普通字符串 混用
+              // 数组可以是 组件 和 普通字符串 混用
+              '已缴纳: ',
               {
                 type: 'el-input',
-                valueKey: 'tuition', // 当content为数组时, 必须制定组件绑定的 tableData 的 key
+                // 当content为数组时, 必须制定组件绑定的 tableData 的 key
+                valueKey: 'tuition',
                 style: {
                   width: '100px',
                   marginRight: '10px'
@@ -262,14 +253,12 @@ props: {
 
 ```js
 columns: {
-  // attrs 为 el-table-column 的属性
-  // 具体参考: https://element.eleme.cn/#/zh-CN/component/table#table-column-attributes
-  attrs: {
-    prop: 'name', // el-table-column 的 prop 属性
-    label: '姓名', // el-table-column 的 label 属性
-    width: 200, // el-table-column 的 width 属性
-    // ...
-  },
+  // attrs 为 el-table-column 的属性 + content
+  // el-table-column 的属性具体参考: https://element.eleme.cn/#/zh-CN/component/table#table-column-attributes
+  prop: 'name', // el-table-column 的 prop 属性
+  label: '姓名', // el-table-column 的 label 属性
+  width: 200, // el-table-column 的 width 属性
+  // ...
   // column的内容, 可省略, 省略时为显示字符串
   // column 的类型可以为对象或者对象数组, 例如
   content: {
@@ -328,8 +317,9 @@ columns: {
 
 ## 插槽
 
-- 默认插槽 新增按钮的插槽
-- column 中 prop 属性对应的插槽, 例如示例中 `v-slot:sex` 或者 `v-slot:age` 等
+- `default`: 默认插槽 新增按钮的插槽
+- `btn`: 右侧按钮插槽
+- `prop`: column 中 prop 属性对应的插槽, 例如示例中 `v-slot:sex` 或者 `v-slot:age` 等
 
 ## 相关链接
 

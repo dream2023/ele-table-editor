@@ -95,24 +95,17 @@ export default {
       // 表格列
       columns:
         [
+          // el-table-column 的属性
           {
-            // attrs 为 el-table-column 的属性
-            attrs: {
-              type: 'index'
-            }
+            type: 'index'
           },
           {
-            // 当没有 conent 属性时, 按照正常文本显示
-            attrs: {
-              prop: 'grade',
-              label: '年级'
-            }
+            prop: 'grade',
+            label: '年级'
           },
           {
-            attrs: {
-              prop: 'name',
-              label: '姓名'
-            },
+            prop: 'name',
+            label: '姓名',
             // 当有 content 属性时, 可以指定相应的组件
             content: {
               // type 可以为全局注册的组件名或者组件引用
@@ -128,16 +121,12 @@ export default {
             }
           },
           {
-            attrs: {
-              prop: 'sex',
-              label: '性别'
-            }
+            prop: 'sex',
+            label: '性别'
           },
           {
-            attrs: {
-              label: '缴费',
-              width: 400
-            },
+            label: '缴费',
+            width: 400,
             // content 可以为数组
             content: [
               '已缴纳: ', // 数组可以是 组件 和 普通字符串 混用
@@ -169,9 +158,8 @@ export default {
     },
     // 校检数据
     handleCheck () {
-      this.$refs['table'].validate((res) => {
-        /* eslint-disable */
-        console.log(res)
+      this.$refs['table'].validate().catch(({ errors, fields }) => {
+        console.log(errors, fields)
       })
     }
   }

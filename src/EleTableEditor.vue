@@ -19,18 +19,15 @@
       <!-- element-ui table-column组件 -->
       <template v-for="(item, index) of computedColumns">
         <!-- type 非 index / selection -->
-        <el-table-column
-          v-if="item.isShowSlot"
-          :key="index"
-          v-bind="item.attrs"
-        >
+        <el-table-column v-if="item.isShowSlot" :key="index" v-bind="item">
           <!-- table-column 作用域插槽 -->
           <template slot-scope="scope">
             <!-- 对外暴露的作用域插槽 -->
             <slot
-              :name="item.attrs.prop"
+              :name="item.prop"
               :data="value[scope.$index]"
               :row="scope.row"
+              :disabled="disabled"
               :index="scope.$index"
               class="ele-table-editor-content"
             >
@@ -49,25 +46,17 @@
                     :key="i"
                     class="el-form-item"
                     :disabled="
-                      !isError(
-                        scope.$index,
-                        contentItem.valueKey,
-                        item.attrs.prop
-                      )
+                      !isError(scope.$index, contentItem.valueKey, item.prop)
                     "
                     :class="{
                       'is-error': isError(
                         scope.$index,
                         contentItem.valueKey,
-                        item.attrs.prop
+                        item.prop
                       )
                     }"
                     :content="
-                      isError(
-                        scope.$index,
-                        contentItem.valueKey,
-                        item.attrs.prop
-                      )
+                      isError(scope.$index, contentItem.valueKey, item.prop)
                     "
                     placement="top"
                   >
@@ -76,17 +65,15 @@
                       :is="contentItem.type"
                       :style="contentItem.style"
                       :class="contentItem.class"
-                      v-bind="getAttrs(contentItem.attrs)"
+                      v-bind="getAttrs(contentItem)"
                       @input="
                         handleChange(
-                          contentItem.valueKey || item.attrs.prop,
+                          contentItem.valueKey || item.prop,
                           scope.$index,
                           $event
                         )
                       "
-                      v-model="
-                        scope.row[contentItem.valueKey || item.attrs.prop]
-                      "
+                      v-model="scope.row[contentItem.valueKey || item.prop]"
                       v-on="contentItem.on"
                     >
                       <!-- 组件的插槽 -->
@@ -112,16 +99,13 @@
               </template>
               <template v-else>
                 <!-- 没有定义content则这显示对应的文本值 -->
-                <template v-if="item.attrs && item.attrs.prop">{{
-                  scope.row[item.attrs.prop]
-                }}</template>
+                <template v-if="item.prop">{{ scope.row[item.prop] }}</template>
               </template>
             </slot>
           </template>
         </el-table-column>
         <!-- type 为 index / selection -->
-        <el-table-column v-else :key="index" v-bind="item.attrs">
-        </el-table-column>
+        <el-table-column v-else :key="index" v-bind="item"> </el-table-column>
       </template>
       <el-table-column
         v-if="isShowActionColumn"
@@ -130,16 +114,21 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button
-            v-for="(btn, index) of extraBtns"
-            :key="index"
-            v-bind="btn.attrs"
-            @click="btn.click(scope)"
-            >{{ btn.text }}</el-button
-          >
-          <el-button v-bind="deleteBtnAttr" @click="handleDelete(scope.$index)"
-            >删除</el-button
-          >
+          <slot v-bind="scope" name="btn">
+            <el-button
+              v-for="(btn, index) of extraBtns"
+              :key="index"
+              v-bind="btn.attrs"
+              @click="btn.click(scope)"
+              >{{ btn.text }}</el-button
+            >
+            <el-button
+              v-bind="deleteBtnAttr"
+              v-if="isShowDelete"
+              @click="handleDelete(scope.$index)"
+              >删除</el-button
+            >
+          </slot>
         </template>
       </el-table-column>
     </el-table>
@@ -148,12 +137,12 @@
 
 <script>
 import validate from './validate'
-import ExtendSlot from './ExtendSlot'
+// import ExtendSlot from './ExtendSlot'
 
 export default {
   name: 'EleTableEditor',
   mixins: [validate],
-  components: { ExtendSlot },
+  // components: { ExtendSlot },
   props: {
     // 表格的属性
     tableAttrs: {
@@ -167,6 +156,7 @@ export default {
     // 表单数据
     value: {
       type: Array,
+      required: true,
       default: () => []
     },
     // 是否显示删除
@@ -191,6 +181,7 @@ export default {
     // table 列
     columns: {
       type: Array,
+      required: true,
       default: () => []
     },
     // 校检规则
@@ -217,10 +208,10 @@ export default {
     }
   },
   computed: {
-    // 对 columns 参数做处理
+    // 对 columns 属性做处理
+    // 1. 判断是否显示插槽 & 2.将content统一转为数组
     computedColumns () {
-      const columns = this.columns
-      return columns.map((item) => {
+      return this.columns.map((item) => {
         // 是否显示插槽
         item.isShowSlot = this.isShowSlot(item)
         // 将  content 转为数组
@@ -238,7 +229,7 @@ export default {
   methods: {
     // 是否展示插槽 (type 为 index 或者 selection时, 不显示插槽)
     isShowSlot (item) {
-      return !item.attrs || !item.attrs.type || !['index', 'selection'].includes(item.attrs.type)
+      return !item.type || !['index', 'selection'].includes(item.type)
     },
     // 删除
     handleDelete (index) {
@@ -246,6 +237,7 @@ export default {
       tableData.splice(index, 1)
       this.$emit('input', tableData)
     },
+    // 新增
     handleAdd () {
       this.value.push(Object.assign({}, this.newColumnValue))
       this.$emit('input', this.value)
@@ -259,9 +251,9 @@ export default {
     changeToArray (content) {
       return Array.isArray(content) ? content : [content]
     },
-    // 获取属性
-    getAttrs (attrs) {
-      return Object.assign({}, { disabled: this.disabled }, attrs)
+    // 获取属性 (为了将disabled统一设置)
+    getAttrs (item) {
+      return Object.assign({}, { disabled: this.disabled }, item)
     }
   }
 }
