@@ -63,11 +63,14 @@ export default {
           name: '小张',
           sex: '男',
           tuition: 2000,
-          unPay: 100
+          unPay: 100,
+          status: 0,
+          dream: ''
         }
       ],
       newColumnValue: {
-        grade: '三年级二班'
+        grade: '三年级二班',
+        status: 1
       },
       // 校检规则
       rules: {
@@ -95,11 +98,12 @@ export default {
       // 表格列
       columns:
         [
-          // el-table-column 的属性
           {
+            // el-table-column 的属性
             type: 'index'
           },
           {
+            // el-table-column 的属性
             prop: 'grade',
             label: '年级'
           },
@@ -147,15 +151,57 @@ export default {
                 }
               }
             ]
+          },
+          {
+            prop: 'dream',
+            label: '梦想',
+            content: {
+              type: 'el-radio-group',
+              // 对于 el-select, el-checkbox-group, el-radio-group 三个组件
+              // 可以指定  options 数组进行选项的渲染
+              options: [
+                // option 的值可以为对象
+                // 此处对以上三个组件做了封装, 显示的key为 text, 值key为 value
+                { text: '科学家', value: 'scientist' },
+                { text: '警察', value: 'policeman' },
+                // 也可以指定为字符串, 则会转化为 '程序员' => { text: '程序员', value: '程序员' }
+                '程序员'
+              ]
+            }
+          },
+          {
+            prop: 'birthplace',
+            label: '籍贯',
+            content: {
+              type: 'el-select',
+              // 如果 key 不是 text 和 value
+              // 可以使用 prop 指定 key
+              options: [
+                { name: '北京', id: 'beijing' },
+                { name: '上海', id: 'shanghai' },
+                { name: '广州', id: 'guangzhou' },
+              ],
+              // prop 将 text 对应 name, value 对应 id
+              prop: {
+                text: 'name',
+                value: 'id'
+              }
+            }
+          },
+          {
+            prop: 'status',
+            label: '状态',
+            // 通过 options 将枚举值转为文本
+            options: {
+              0: '禁用',
+              1: '正常',
+              2: '异常'
+            }
           }
         ]
     }
   },
   methods: {
-    // 新增数据
-    handleAdd () {
-      this.tableData.push({ grade: '三年级二班' })
-    },
     // 校检数据
     handleCheck () {
       this.$refs['table'].validate().catch(({ errors, fields }) => {

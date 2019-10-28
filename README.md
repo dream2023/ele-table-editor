@@ -77,17 +77,20 @@ export default {
           {
             grade: '三年级二班',
             name: '小张',
-            age: 18,
             sex: '男',
             tuition: 2000,
-            unPay: 100
+            unPay: 100,
+            status: 0,
+            dream: ''
           }
         ],
-        // 新增列的默认值
-        newColumnValue: { grade: '三年级二班' },
+        newColumnValue: {
+          grade: '三年级二班',
+          status: 1
+        },
         // 校检规则
         rules: {
-          name: { required: true, message: '姓名必填' },
+          name: [{ required: true, message: '姓名必填' }],
           tuition: { required: true, message: '已缴纳金额必填' }
         },
         // 其它按钮
@@ -101,18 +104,19 @@ export default {
             },
             // click事件
             click(scope) {
+              /* eslint-disable */
               console.log(scope)
             }
           }
         ],
-
         // 表格列
         columns: [
-          // el-table-column 的属性 + content 属性
           {
+            // el-table-column 的属性
             type: 'index'
           },
           {
+            // el-table-column 的属性
             prop: 'grade',
             label: '年级'
           },
@@ -131,8 +135,8 @@ export default {
               // style: {}, // 组件的样式
               // class: {}, // 组件的class
               // on: {}, // 组件的事件
-              // slots:{}, // 插槽
-              // scopedSlots: {} // 作用域插槽
+              // slots: {}, // 插槽
+              // scopedSlots: {}, 作用域插槽
             }
           },
           {
@@ -144,12 +148,10 @@ export default {
             width: 400,
             // content 可以为数组
             content: [
-              // 数组可以是 组件 和 普通字符串 混用
-              '已缴纳: ',
+              '已缴纳: ', // 数组可以是 组件 和 普通字符串 混用
               {
                 type: 'el-input',
-                // 当content为数组时, 必须制定组件绑定的 tableData 的 key
-                valueKey: 'tuition',
+                valueKey: 'tuition', // 当content为数组时, 必须制定组件绑定的 tableData 的 key
                 style: {
                   width: '100px',
                   marginRight: '10px'
@@ -164,6 +166,52 @@ export default {
                 }
               }
             ]
+          },
+          {
+            prop: 'dream',
+            label: '梦想',
+            content: {
+              type: 'el-radio-group',
+              // 对于 el-select, el-checkbox-group, el-radio-group 三个组件
+              // 可以指定  options 数组进行选项的渲染
+              options: [
+                // option 的值可以为对象
+                // 此处对以上三个组件做了封装, 显示的key为 text, 值key为 value
+                { text: '科学家', value: 'scientist' },
+                { text: '警察', value: 'policeman' },
+                // 也可以指定为字符串, 则会转化为 '程序员' => { text: '程序员', value: '程序员' }
+                '程序员'
+              ]
+            }
+          },
+          {
+            prop: 'birthplace',
+            label: '籍贯',
+            content: {
+              type: 'el-select',
+              // 如果 key 不是 text 和 value
+              // 可以使用 prop 指定 key
+              options: [
+                { name: '北京', id: 'beijing' },
+                { name: '上海', id: 'shanghai' },
+                { name: '广州', id: 'guangzhou' }
+              ],
+              // prop 将 text 对应 name, value 对应 id
+              prop: {
+                text: 'name',
+                value: 'id'
+              }
+            }
+          },
+          {
+            prop: 'status',
+            label: '状态',
+            // 通过 options 将枚举值转为文本
+            options: {
+              0: '禁用',
+              1: '正常',
+              2: '异常'
+            }
           }
         ]
       }
@@ -171,8 +219,8 @@ export default {
     methods: {
       // 校检数据
       handleCheck() {
-        this.$refs['table'].validate(res => {
-          console.log(res)
+        this.$refs['table'].validate().catch(({ errors, fields }) => {
+          console.log(errors, fields)
         })
       }
     }
@@ -252,67 +300,71 @@ props: {
 ### columns 参数详解
 
 ```js
-columns: {
-  // attrs 为 el-table-column 的属性 + content
-  // el-table-column 的属性具体参考: https://element.eleme.cn/#/zh-CN/component/table#table-column-attributes
-  prop: 'name', // el-table-column 的 prop 属性
-  label: '姓名', // el-table-column 的 label 属性
-  width: 200, // el-table-column 的 width 属性
-  // ...
-  // column的内容, 可省略, 省略时为显示字符串
-  // column 的类型可以为对象或者对象数组, 例如
-  content: {
-    // 渲染的组件, 可以为全局注册的组件名称或者直接组件的引用
-    type: 'el-select',
-    // 组件属性
-    attrs: {
-      size: 'medium',
-      // ...
-    },
-    // 组件样式
-    style: {
-      width: '200px',
-      // ...
-    },
-    // 组件 class
-    class: 'my-custom-select',
-    // 组件事件
-    on: {
-      change(value) {
-        console.log(value)
+columns: [
+  {
+    // attrs 为 el-table-column 的属性 + content
+    // el-table-column 的属性具体参考: https://element.eleme.cn/#/zh-CN/component/table#table-column-attributes
+    prop: 'name', // el-table-column 的 prop 属性
+    label: '姓名', // el-table-column 的 label 属性
+    width: 200, // el-table-column 的 width 属性
+    // ...
+    // column 的内容, 可省略, 省略时为显示字符串
+    // column 的类型可以为对象或者对象数组, 例如
+    content: {
+      // 渲染的组件, 可以为全局注册的组件名称或者直接组件的引用
+      type: 'el-select',
+      valueKey: 'xxx', // 绑定的tableData 的key
+      // select, checkbox, radio 三个组件特有的属性
+      // 用于指定选项
+      options: [ { text: '北京', value: 'beijing' }, { text: '上海', value: 'shanghai'} ]
+      // 同上, 用于当 options的key不是 text 和 value 时指定key和value
+      prop: {
+        text: 'name',
+        value: 'id'
       },
-      // ...
-    },
-    // 组件插槽
-    slots: {
-      default (h) {
-        return [
-          h('el-option', { attrs: { label: '男', value: 1 } }),
-          h('el-option', { attrs: { label: '女', value: 2 } })
-        ]
+      // 组件属性
+      attrs: {
+        size: 'medium',
+        // ...
+      },
+      // 组件样式
+      style: {
+        width: '200px',
+        // ...
+      },
+      // 组件 class
+      class: 'my-custom-select',
+      // 组件事件
+      on: {
+        change(value) {
+          console.log(value)
+        },
+        // ...
+      },
+      // 组件插槽
+      slots: {
+        default (h) {
+          return [
+            h('el-option', { attrs: { label: '男', value: 1 } }),
+            h('el-option', { attrs: { label: '女', value: 2 } })
+          ]
+        }
+      },
+      // 作用域插槽
+      scopedSlots: {
+        test (h, data) {
+          // data 为传递过来的参数
+          return h('div', 'test')
+        }
       }
     },
-    // 作用域插槽
-    scopedSlots: {
-      test (h, data) {
-        // data 为传递过来的参数
-        return h('div', 'test')
-      }
+    // 此属性, 仅当当未指定 content 时, 用于格式化文本
+    // status: 1 , options为枚举
+    options: {
+      1: '正常',
+      2: '禁用'
     }
-  },
-  // ⚠️ 当content为数组时, 必须要指定双向绑定的 valueKey
-  // 例如
-  content: [
-    {
-      type: ElInput, // 这里是直接使用组件的引用 import {ElInput} from 'element-ui'
-      valueKey: 'name' // 和 tableData 的 name 绑定
-    }
-    {
-      type: 'el-input',
-      valueKey: 'age' // 和 tableData 的 age 绑定
-    }
-  ]
-}
+]
 ```
 
 ## 插槽

@@ -78,6 +78,24 @@
                     >
                       <!-- 组件的插槽 -->
 
+                      <!-- select, checkbox, radio等简化操作 options -->
+                      <template
+                        v-slot:default
+                        v-if="
+                          contentItem.options && optionTypes[contentItem.type]
+                        "
+                      >
+                        <option-slot
+                          v-for="(option, index) of contentItem.options"
+                          :key="index"
+                          :data="option"
+                          :prop="contentItem.prop"
+                          :optionAttrs="option.attrs"
+                          :optionType="optionTypes[contentItem.type].type"
+                          :optionText="optionTypes[contentItem.type].text"
+                          :optionValue="optionTypes[contentItem.type].value"
+                        ></option-slot>
+                      </template>
                       <!-- 作用域插槽 -->
                       <template
                         v-for="(render, key) of contentItem.scopedSlots"
@@ -99,13 +117,15 @@
               </template>
               <template v-else>
                 <!-- 没有定义content则这显示对应的文本值 -->
-                <template v-if="item.prop">{{ scope.row[item.prop] }}</template>
+                <template v-if="item.prop">{{
+                  getContentText(scope, item)
+                }}</template>
               </template>
             </slot>
           </template>
         </el-table-column>
         <!-- type 为 index / selection -->
-        <el-table-column v-else :key="index" v-bind="item"> </el-table-column>
+        <el-table-column v-else :key="index" v-bind="item"></el-table-column>
       </template>
       <el-table-column
         v-if="isShowActionColumn"
@@ -137,12 +157,13 @@
 
 <script>
 import validate from './validate'
-// import ExtendSlot from './ExtendSlot'
+import ExtendSlot from './ExtendSlot'
+import OptionSlot from './OptionSlot'
 
 export default {
   name: 'EleTableEditor',
   mixins: [validate],
-  // components: { ExtendSlot },
+  components: { ExtendSlot, OptionSlot },
   props: {
     // 表格的属性
     tableAttrs: {
@@ -226,6 +247,27 @@ export default {
       return this.isShowDelete || this.extraBtns
     }
   },
+  data () {
+    return {
+      optionTypes: {
+        'el-select': {
+          type: 'el-option',
+          text: 'label',
+          value: 'value'
+        },
+        'el-checkbox-group': {
+          type: 'el-checkbox',
+          text: 'content',
+          value: 'label'
+        },
+        'el-radio-group': {
+          type: 'el-radio',
+          text: 'content',
+          value: 'label'
+        }
+      }
+    }
+  },
   methods: {
     // 是否展示插槽 (type 为 index 或者 selection时, 不显示插槽)
     isShowSlot (item) {
@@ -254,6 +296,19 @@ export default {
     // 获取属性 (为了将disabled统一设置)
     getAttrs (item) {
       return Object.assign({}, { disabled: this.disabled }, item)
+    },
+    // 获取文本内容
+    getContentText (scope, item) {
+      let text = scope.row[item.prop]
+      // 通过options获取枚举值
+      if (item.options && item.options[text]) {
+        text = item.options[text]
+      }
+      // 通过 formatter 获取格式化的值
+      if (item.formatter) {
+        text = item.formatter(scope.row, scope.column)
+      }
+      return text
     }
   }
 }
