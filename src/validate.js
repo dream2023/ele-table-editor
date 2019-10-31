@@ -16,14 +16,14 @@ export default {
       // 没有数据 或者 没有校检, 则直接返回 resolve
       if (!this.rules || !this.value.length) return Promise.resolve()
 
-      // async-validator 数组的校检 https://github.com/yiminghe/async-validator#deep-rules
-      var descriptor = {
-        data: {
-          type: 'array',
-          fields: this.rules
-        }
-      }
-      return new Schema(descriptor).validate({ data: this.value })
+      // 循环遍历每列数据, 进行校检
+      const validator = new Schema(this.rules)
+      const validators = this.value.map((item) => {
+        return new Promise((resolve, reject) => {
+          return validator.validate(item).then(resolve).catch(reject)
+        })
+      })
+      return Promise.all(validators)
     },
     // 检测每一个行的每个值的数据
     validateAllValue () {
