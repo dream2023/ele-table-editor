@@ -1,7 +1,7 @@
 {
   "name": "ele-table-editor",
   "description": "基于element-ui的表格编辑组件",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "license": "MIT",
   "private": false,
   "scripts": {

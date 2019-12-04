@@ -102,6 +102,9 @@ export default {
             attrs: {
               type: 'text'
             },
+            style: {
+              color: '#303133'
+            },
             // click事件
             click(scope) {
               /* eslint-disable */

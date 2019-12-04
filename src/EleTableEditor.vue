@@ -139,6 +139,7 @@
               v-for="(btn, index) of extraBtns"
               :key="index"
               v-bind="btn.attrs"
+              :style="btn.style"
               @click="btn.click(scope)"
               >{{ btn.text }}</el-button
             >
@@ -190,7 +191,10 @@ export default {
       type: Object,
       default () {
         return {
-          type: 'text'
+          type: 'text',
+          style: {
+            color: '#F56C6C'
+          }
         }
       }
     },
@@ -232,7 +236,7 @@ export default {
     // 对 columns 属性做处理
     // 1. 判断是否显示插槽 & 2.将content统一转为数组
     computedColumns () {
-      return this.columns.map((item) => {
+      return this.columns.map(item => {
         // 是否显示插槽
         item.isShowSlot = this.isShowSlot(item)
         // 将  content 转为数组
@@ -295,7 +299,7 @@ export default {
     },
     // 获取属性 (为了将disabled统一设置)
     getAttrs (item) {
-      return Object.assign({}, { disabled: this.disabled }, item)
+      return Object.assign({}, { disabled: this.disabled }, item.attrs)
     },
     // 获取文本内容
     getContentText (scope, item) {

@@ -10,11 +10,11 @@ export default {
   methods: {
     // 数据校检 (对外暴露)
     validate () {
-      // 检测单个值, 用于界面提示
-      this.validateAllValue()
-
       // 没有数据 或者 没有校检, 则直接返回 resolve
       if (!this.rules || !this.value.length) return Promise.resolve()
+
+      // 检测单个值, 用于界面提示
+      this.validateAllValue()
 
       // 循环遍历每列数据, 进行校检
       const validator = new Schema(this.rules)
