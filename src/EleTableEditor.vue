@@ -238,7 +238,12 @@ export default {
     computedColumns () {
       return this.columns.map(item => {
         // 是否显示插槽
-        item.isShowSlot = this.isShowSlot(item)
+        Object.defineProperty(item, 'isShowSlot', {
+          value: this.isShowSlot(item),
+          enumerable: false,
+          writable: true,
+          configurable: true
+        })
         // 将  content 转为数组
         if (item.content) {
           item.content = this.changeToArray(item.content)
