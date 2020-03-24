@@ -73,6 +73,14 @@
                           $event
                         )
                       "
+                      @change="
+                        emitChange(
+                          contentItem.change,
+                          $event,
+                          scope.row,
+                          scope.$index
+                        )
+                      "
                       v-model="scope.row[contentItem.valueKey || item.prop]"
                       v-on="contentItem.on"
                     >
@@ -287,6 +295,12 @@ export default {
     handleAdd () {
       this.value.push(Object.assign({}, this.newColumnValue))
       this.$emit('input', this.value)
+    },
+    // 将数据绑定到 change 函数上
+    emitChange (change, val, row, index) {
+      if (change) {
+        change(val, row, index)
+      }
     },
     // 值变化
     handleChange (prop, index, value) {

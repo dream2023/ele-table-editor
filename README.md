@@ -133,7 +133,10 @@ export default {
               // attrs 是组件的属性
               attrs: {
                 placeholder: '学员姓名'
-              }
+              },
+              change(val, row, index) {
+                console.log(val, row, index)
+              },
               // 此外还有
               // style: {}, // 组件的样式
               // class: {}, // 组件的class
@@ -329,6 +332,10 @@ columns: [
       attrs: {
         size: 'medium',
         // ...
+      },
+      // change 事件
+      change (val, row, index) {
+        console.log(val, row, index)
       },
       // 组件样式
       style: {
