@@ -294,6 +294,7 @@ export default {
     handleDelete (index) {
       const tableData = this.value
       tableData.splice(index, 1)
+      this.$delete(this.errorList, index)
       this.$emit('input', tableData)
     },
     // 新增
