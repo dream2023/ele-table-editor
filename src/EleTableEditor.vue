@@ -65,7 +65,7 @@
                       :is="contentItem.type"
                       :style="contentItem.style"
                       :class="contentItem.class"
-                      v-bind="getAttrs(contentItem)"
+                      v-bind="getAttrs(contentItem, scope)"
                       @input="
                         handleChange(
                           contentItem.valueKey || item.prop,
@@ -197,7 +197,7 @@ export default {
     // 删除按钮属性
     deleteBtnAttr: {
       type: Object,
-      default () {
+      default() {
         return {
           type: 'text',
           style: {
@@ -243,28 +243,38 @@ export default {
   computed: {
     // 对 columns 属性做处理
     // 1. 判断是否显示插槽 & 2.将content统一转为数组
-    computedColumns () {
-      return this.columns.map(item => {
-        // 是否显示插槽
-        Object.defineProperty(item, 'isShowSlot', {
-          value: this.isShowSlot(item),
-          enumerable: false,
-          writable: true,
-          configurable: true
+    computedColumns() {
+      return this.columns
+        .filter(item => {
+          if (typeof item.vif === 'function') {
+            return item.vif(this.value)
+          } else if (typeof item.vif === 'undefined') {
+            return true
+          } else {
+            return Boolean(item.vif)
+          }
         })
-        // 将  content 转为数组
-        if (item.content) {
-          item.content = this.changeToArray(item.content)
-        }
-        return item
-      })
+        .map(item => {
+          // 是否显示插槽
+          Object.defineProperty(item, 'isShowSlot', {
+            value: this.isShowSlot(item),
+            enumerable: false,
+            writable: true,
+            configurable: true
+          })
+          // 将  content 转为数组
+          if (item.content) {
+            item.content = this.changeToArray(item.content)
+          }
+          return item
+        })
     },
     // 是否显示操作列
-    isShowActionColumn () {
+    isShowActionColumn() {
       return this.isShowDelete || this.extraBtns
     }
   },
-  data () {
+  data() {
     return {
       optionTypes: {
         'el-select': {
@@ -287,42 +297,46 @@ export default {
   },
   methods: {
     // 是否展示插槽 (type 为 index 或者 selection时, 不显示插槽)
-    isShowSlot (item) {
+    isShowSlot(item) {
       return !item.type || !['index', 'selection'].includes(item.type)
     },
     // 删除
-    handleDelete (index) {
+    handleDelete(index) {
       const tableData = this.value
       tableData.splice(index, 1)
       this.$delete(this.errorList, index)
       this.$emit('input', tableData)
     },
     // 新增
-    handleAdd () {
+    handleAdd() {
       this.value.push(Object.assign({}, this.newColumnValue))
       this.$emit('input', this.value)
     },
     // 将数据绑定到 change 函数上
-    emitChange (change, val, row, index) {
+    emitChange(change, val, row, index) {
       if (change) {
         change(val, row, index)
       }
     },
     // 值变化
-    handleChange (prop, index, value) {
+    handleChange(prop, index, value) {
       this.validateOneValue(prop, index, value)
     },
     // content 支持数组和对象类型
     // 统一转为数组
-    changeToArray (content) {
+    changeToArray(content) {
       return Array.isArray(content) ? content : [content]
     },
     // 获取属性 (为了将disabled统一设置)
-    getAttrs (item) {
-      return Object.assign({}, { disabled: this.disabled }, item.attrs)
+    getAttrs(item, scope) {
+      const attrs =
+        typeof item.attrs === 'function'
+          ? item.attrs(scope, this.value)
+          : item.attrs
+      return Object.assign({}, { disabled: this.disabled }, attrs)
     },
     // 获取文本内容
-    getContentText (scope, item) {
+    getContentText(scope, item) {
       let text = scope.row[item.prop]
       // 通过options获取枚举值
       if (item.options && item.options[text]) {

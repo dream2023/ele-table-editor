@@ -121,11 +121,17 @@ export default {
           {
             // el-table-column 的属性
             prop: 'grade',
-            label: '年级'
+            label: '年级',
+            // 支持 显示隐藏
+            vif: true
           },
           {
             prop: 'name',
             label: '姓名',
+            // 支持显示隐藏为 函数
+            vif(tableData) {
+              return true;
+            },
             // 当有 content 属性时, 可以指定相应的组件
             content: {
               // type 可以为全局注册的组件名或者组件引用
@@ -158,6 +164,13 @@ export default {
               {
                 type: 'el-input',
                 valueKey: 'tuition', // 当content为数组时, 必须制定组件绑定的 tableData 的 key
+                // 支持 attrs 为函数
+                attrs(scope, tableData){
+                  console.log(scope, tableData)
+                  return {
+                    disabled: scope.$index === 2 ? true : false
+                  }
+                },
                 style: {
                   width: '100px',
                   marginRight: '10px'
@@ -313,6 +326,7 @@ columns: [
     prop: 'name', // el-table-column 的 prop 属性
     label: '姓名', // el-table-column 的 label 属性
     width: 200, // el-table-column 的 width 属性
+    vif: true, //  el-table-column 是否显示，可以为函数
     // ...
     // column 的内容, 可省略, 省略时为显示字符串
     // column 的类型可以为对象或者对象数组, 例如
@@ -332,6 +346,12 @@ columns: [
       attrs: {
         size: 'medium',
         // ...
+      },
+      // 可以为函数，根据数据判断
+      attrs(scope, tableData) {
+        return {
+          disabled: scope.$index === 1 ? true : false
+        }
       },
       // change 事件
       change (val, row, index) {
