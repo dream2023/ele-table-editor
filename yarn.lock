@@ -1205,10 +1205,10 @@
     source-map "~0.6.1"
     vue-template-es2015-compiler "^1.9.0"
 
-"@vue/eslint-config-standard@^4.1.2":
+"@vue/eslint-config-standard@^4.0.0":
   version "4.0.0"
-  resolved "https://registry.npm.taobao.org/@vue/eslint-config-standard/download/@vue/eslint-config-standard-4.0.0.tgz#6be447ee674e3b0f733c584098fd9a22e6d76fcd"
-  integrity sha1-a+RH7mdOOw9zPFhAmP2aIubXb80=
+  resolved "https://registry.yarnpkg.com/@vue/eslint-config-standard/-/eslint-config-standard-4.0.0.tgz#6be447ee674e3b0f733c584098fd9a22e6d76fcd"
+  integrity sha512-bQghq1cw1BuMRHNhr3tRpAJx1tpGy0QtajQX873kLtA9YVuOIoXR7nAWnTN09bBHnSUh2N288vMsqPi2fI4Hzg==
   dependencies:
     eslint-config-standard "^12.0.0"
     eslint-plugin-import "^2.14.0"
@@ -5347,9 +5347,9 @@ lodash.uniq@^4.5.0:
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
 lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.3:
-  version "4.17.15"
-  resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.15.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash%2Fdownload%2Flodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha1-tEf2ZwoEVbv+7dETku/zMOoJdUg=
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 log-symbols@^1.0.2:
   version "1.0.2"
